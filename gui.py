@@ -4,14 +4,30 @@
 from Tkinter import *
 import tkMessageBox
 from PIL import Image,ImageTk
+import cv2
 
 
 app = Tk()
 im = Image.open("images/113.jpg")
 photo = ImageTk.PhotoImage(im)
 label2 = Label(app, image = photo)
+
+def helloButton():
+    print('hello button')
+
+Button(app, text='Hello Button', command=helloButton).pack()
+
+
+def callBack(event):
+    print("现在的位置是", event.x, event.y)
+    cv2.circle(photo, (event.x, event.y), 3, (0, 0, 255), 2)
+
+
+app.bind("<Button-1>", callBack)
 label2.pack()
 app.mainloop()
+
+
 
 
 # class Application(Frame):

@@ -18,17 +18,17 @@ def is_circle_contour(contour):
     rect = cv2.boundingRect(contour)
     ## 获取矩形框的宽，高
     x,y,width,height = rect
-    print 'cv2 周长' + str(area)
+    # print 'cv2 周长' + str(area)
     ## 半径
     r = (height + width) / 4
     ## 自己计算的面积
     tmp_area = pi * r * 2
-    print '计算周长'+str(tmp_area),'计算半径'+str(r)
+    # print '计算周长'+str(tmp_area),'计算半径'+str(r)
     ## 面积差
     area_diff = abs(area - tmp_area) / area * 100
 
-    print '周长差是' + str(area_diff)+'%'
-    print '\n'
+    # print '周长差是' + str(area_diff)+'%'
+    # print '\n'
 
     ## 目前统计的，最大的面积差5.%
     area_diff_thresh = 5
@@ -66,15 +66,15 @@ for i in range(0,len(contours)):
         if is_circle_contour(contours[i]) == True:
             tmp_contours.append(contours[i])
 
-print '过滤后的tmp_contours数组 ->' + str(len(tmp_contours))
+# print '过滤后的tmp_contours数组 ->' + str(len(tmp_contours))
 
 ## 取出质心坐标
 cnt = tmp_contours[0]
 moment = cv2.moments(cnt)
 cx = int(moment['m10'] / moment['m00'])
 cy = int(moment['m01'] / moment['m00'])
-print '10环质心坐标：' + str(cx) +',' + str(cy)
-print  '#' * 100
+# print '10环质心坐标：' + str(cx) +',' + str(cy)
+# print  '#' * 100
 
 ## 绘制质心
 cv2.circle(image, (cx, cy), 2, (0, 0, 255), 2)
@@ -97,8 +97,11 @@ for i in range(1,7):
 ## 绘制轮廓
 # cv2.drawContours(image, tmp_contours, -1, (0, 255, 0), 2)
 
+ph1 = "images/251.png"
+ph2 = "images/250.png"
 ## 取到所有中靶子点的数组
-point_arr = get_point()
+point_arr = get_point(original=sys.argv[1],modified=sys.argv[2])
+# point_arr = get_point(original='image1/200.jpg',modified='image1/220.jpg')
 
 for i in range(0,len(point_arr)):
     dict = point_arr[i]
@@ -107,10 +110,10 @@ for i in range(0,len(point_arr)):
     ## 判断点在哪个里
     tmp_r = ((px - x) * (px - x) + (py - y) * (py - y)) ** 0.5
     ring = tmp_r / radius
-    print '系统计算10环半径：' + str(int(radius))
-    print '计算中靶点的半径：' + str(tmp_r)
-    print '计算环数：'  + str(10 - int(ring))
-    print '*' * 100
+    # print '系统计算10环半径：' + str(int(radius))
+    # print '计算中靶点的半径：' + str(tmp_r)
+    print '计算环数：'  + str(10 - int(ring)) + ';'
+    # print '*' * 100
 
 
 # cv2.imshow("find_center", image)
