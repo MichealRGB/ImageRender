@@ -40,7 +40,7 @@ def is_circle_contour(contour):
     return is_circle
 
 ##
-image = cv2.imread('images/113.jpg')
+image = cv2.imread(sys.argv[1])
 if image is None:
     print('Failed to load image:', image)
     sys.exit(1)
@@ -59,12 +59,15 @@ ret,thresh = cv2.threshold(gray_image,127,255,cv2.THRESH_BINARY_INV|cv2.THRESH_O
 _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
 
 ## 过滤小面积的元素，现在要找到中心圆环的轮廓
+outermost_contours = []
 tmp_contours = []
 less_pixels = 25 * 25
 for i in range(0,len(contours)):
     if cv2.contourArea(contours[i]) > less_pixels:
         if is_circle_contour(contours[i]) == True:
             tmp_contours.append(contours[i])
+        else:
+            outermost_contours.append(contours[i])
 
 # print '过滤后的tmp_contours数组 ->' + str(len(tmp_contours))
 
@@ -85,20 +88,12 @@ for i in range(1,7):
     cv2.circle(image,(int(x),int(y)),int(radius * i),(0,0,255),2)
 
 
-# 质心坐标为375,496
-# 质心坐标为226,484
-# 质心坐标为471,423
-# 质心坐标为324,423
-# 质心坐标为279,386
-# 质心坐标为362,380
-# 质心坐标为346,364
-# 检测所有中靶点的质心坐标：346,364
-
 ## 绘制轮廓
 # cv2.drawContours(image, tmp_contours, -1, (0, 255, 0), 2)
 
 ph1 = "images/251.png"
 ph2 = "images/250.png"
+
 ## 取到所有中靶子点的数组
 point_arr = get_point(original=sys.argv[1],modified=sys.argv[2])
 # point_arr = get_point(original='image1/200.jpg',modified='image1/220.jpg')
@@ -110,9 +105,17 @@ for i in range(0,len(point_arr)):
     ## 判断点在哪个里
     tmp_r = ((px - x) * (px - x) + (py - y) * (py - y)) ** 0.5
     ring = tmp_r / radius
+    ## 现在要判断点是否打在靶子上
+    retval = cv2.pointPolygonTest(outermost_contours[0],(px,py),False)
+    ## 如果为-1 代表不在靶上 即为脱靶
+    if retval == -1:
+        print '计算环数：脱靶;'
+    else:
+        print '计算环数：'  + str(10 - int(ring)) + ';'
+
     # print '系统计算10环半径：' + str(int(radius))
     # print '计算中靶点的半径：' + str(tmp_r)
-    print '计算环数：'  + str(10 - int(ring)) + ';'
+    # print '计算环数：'  + str(10 - int(ring)) + ';'
     # print '*' * 100
 
 
